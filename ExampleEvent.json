@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Alexa Analytics Event",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "UserId": {
+      "type": "string"
+    },
+    "Id": {
+      "type": "string"
+    },
+    "SerialNumber": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payloadType": {
+          "type": "string",
+          "enum": ["NOTIFICATION"],
+          "default": "NOTIFICATION"
+        },
+        "analyticsCorrelationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "homeApplianceType": {
+          "type": "string",
+          "enum": [
+            "CLEANING_ROBOT",
+            "COFFEEMAKER",
+            "DISHWASHER",
+            "DRYER",
+            "HOOD",
+            "OVEN",
+            "REFRIGERATOR",
+            "WASHER"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "eventKey": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        }
+      },
+      "title": "NOTIFICATION",
+      "required": [
+        "payloadType",
+        "analyticsCorrelationId",
+        "homeApplianceType",
+        "timestamp",
+        "eventKey",
+        "topic"
+      ]
+    }
+  },
+  "required": ["UserId", "Id", "SerialNumber", "payload"]
+}
