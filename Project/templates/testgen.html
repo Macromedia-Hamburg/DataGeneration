@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Beispiel Daten</title>
+    <style>
+        body {
+            display: flex;
+        }
+        #header-container {
+            width: 100%;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        #left-container, #right-container {
+            width: 50%;
+            padding: 20px;
+        }
+        #settings-container {
+            margin-top: 20px;
+        }
+        .tab {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="left-container">
+        <div id="settings-container">
+            <h2>Settings</h2>
+            <label for="jsonFile">Upload JSON Scheme</label>
+            <input type="file" id="jsonFile" accept=".json" style="display: none;">
+            <button id="uploadBtn" onclick="document.getElementById('jsonFile').click();">Select File</button>
+            <p id="filePath"></p>
+
+            <div class="tab">
+                <label for="numRecords">Anzahl der Datensätze</label>
+                <select id="numRecords">
+                    <option value="10">10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            <div class="tab">
+                <label for="fileSize">Größe in MB</label>
+                <select id="fileSize">
+                    <option value="1">1 MB</option>
+                    <option value="5">5 MB</option>
+                    <option value="10">10 MB</option>
+                </select>
+            </div>
+            <div class="tab">
+                <label for="distribution">Distribution</label>
+                <select id="distribution">
+                    <option value="uniform">Uniform</option>
+                    <option value="normal">Normal</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="tab">
+                <label for="freq">Anzahl/Frequenz</label>
+                <select id="freq">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <br>
+
+            <button id="generateFileBtn">Generiere Datei</button>
+            <button id="generateExampleBtn" onclick="location.reload();">Generiere Beispiel</button>
+        </div>
+    </div>
+
+    <div id="right-container">
+        <h2>Beispiel Daten</h2>
+        <ul>
+            <li><strong>Vorname:</strong> {{ data["Vorname"] }}</li>
+            <li><strong>Nachname:</strong> {{ data["Nachname"] }}</li>
+            <li><strong>Nationalität:</strong> {{ data["Nationalität"] }}</li>
+            <li><strong>Telefonnummer:</strong> {{ data["Telefonnummer"] }}</li>
+            <li><strong>E-Mail:</strong> {{ data["E-Mail"] }}</li>
+            <li><strong>Geschlecht:</strong> {{ data["Geschlecht"] }}</li>
+            <li><strong>Alter:</strong> {{ data["Alter"] }}</li>
+        </ul>
+    </div>
+
+    <script>
+        document.getElementById('jsonFile').addEventListener('change', function() {
+            // Hier können Sie die Logik für den Datei-Upload verarbeiten
+            const filePath = this.value; // Der Pfad der ausgewählten Datei
+            document.getElementById('filePath').textContent = filePath;
+            console.log(filePath);
+        });
+
+        document.getElementById('generateFileBtn').addEventListener('click', function() {
+            // Logik für das Generieren der Datei hier
+        });
+
+        // Logik für das Generieren des Beispieldatensatzes kann hier implementiert werden, falls erforderlich.
+    </script>
+</body>
+</html>
