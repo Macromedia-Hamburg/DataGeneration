@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "Der Vorname des Nutzers"
+    },
+    "lastName": {
+      "type": "string",
+      "description": "Der Nachname des Nutzers"
+    },
+    "location": {
+      "type": "string",
+      "description": "Der Wohnort des Nutzers"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "description": "Die Telefonnummer des Nutzers"
+    }
+  },
+  "required": ["firstName", "lastName"]
+}
