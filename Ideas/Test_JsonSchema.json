@@ -23,6 +23,6 @@
       "type": "boolean",
       "description": "Gibt an, ob der Ofen eingeschaltet ist"
     }
-    // Weitere Eigenschaften hier hinzufügen
-  },
-  "
+    
+  }
+
