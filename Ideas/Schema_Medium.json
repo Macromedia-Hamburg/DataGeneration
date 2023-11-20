@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Der Name des Ofens"
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Die aktuelle Temperatur des Ofens in Grad Celsius"
+    },
+    "powerOn": {
+      "type": "boolean",
+      "description": "Gibt an, ob der Ofen eingeschaltet ist (true) oder ausgeschaltet ist (false)"
+    },
+    "timer": {
+      "type": "integer",
+      "description": "Die verbleibende Zeit des Timers in Minuten (0 bedeutet, dass der Timer nicht aktiv ist)"
+    },
+    "settings": {
+      "type": "object",
+      "description": "Einstellungen des Ofens",
+      "properties": {
+        "temperatureUnit": {
+          "type": "string",
+          "enum": ["Celsius", "Fahrenheit"],
+          "description": "Die Einheit für die Temperaturanzeige"
+        },
+        "convectionFan": {
+          "type": "boolean",
+          "description": "Gibt an, ob der Konvektionsventilator eingeschaltet ist (true) oder ausgeschaltet ist (false)"
+        }
+      },
+      "required": ["temperatureUnit"]
+    }
+  },
+  "required": ["name", "temperature", "powerOn"]
+}
