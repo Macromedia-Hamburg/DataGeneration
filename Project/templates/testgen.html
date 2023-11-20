@@ -35,19 +35,20 @@
     <div id="left-container">
         <div id="settings-container">
             <h2>Settings</h2>
-            <label for="jsonFile">Upload JSON Scheme</label>
-            <input type="file" id="jsonFile" accept=".json" style="display: none;">
-            <button id="uploadBtn" onclick="document.getElementById('jsonFile').click();">Select File</button>
-            <p id="filePath"></p>
+            <form action="/upload_json" method="post" enctype="multipart/form-data">
+                <label for="jsonFile">Upload JSON Scheme</label>
+                <input type="file" name="file" id="jsonFile" accept=".json" style="display: none;">
+                <button type="button" id="uploadBtn" onclick="document.getElementById('jsonFile').click();">Select File</button>
+                <p id="filePath"></p>
 
-            <div class="tab">
-                <label for="numRecords">Anzahl der Datensätze</label>
-                <select id="numRecords">
-                    <option value="10">10</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
+                <div class="tab">
+                    <label for="numRecords">Anzahl der Datensätze</label>
+                    <select id="numRecords" name="numRecords">
+                        <option value="10">10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             <div class="tab">
                 <label for="fileSize">Größe in MB</label>
                 <select id="fileSize">
