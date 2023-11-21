@@ -44,10 +44,6 @@ def upload_json():
     # Kontaktstelle zum HTML Code. Erstellt eine Variable file und weißt dieser die Hochgeladene Datei zu
     file = request.files["file"]
 
-    # Überprüft ob eine JSON Datei ausgewählt wurde, gibt einen Error zurück falls nicht
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
-
     # Wird ausgeführt wenn eine JSON Datei ausgewählt wurde. Erstellt einen temporären Dateipfad für die temp.json Datei
     if file and file.filename.endswith(".json"):
         temp_dir = tempfile.mkdtemp()

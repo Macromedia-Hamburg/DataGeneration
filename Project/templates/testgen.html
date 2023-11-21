@@ -22,22 +22,39 @@
             display: flex;
             flex-direction: column;
         }
-        #settings-container, #distribution-container {
+        #settings-container, #distribution-container, #example-container {
             margin-top: 20px;
             width: 100%;
             padding: 20px;
             border: 1px solid #ccc;
             box-sizing: border-box;
+            display: flex; /* Updated to flex to align items horizontally */
+            flex-direction: column;
         }
         .tab {
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .tab label {
+            margin-right: 10px;
         }
         #right-container {
             width: 50%;
             padding: 20px;
         }
         #action-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-top: 20px;
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+        }
+        #generateFileBtn {
+            padding: 10px 20px;
+            font-size: 18px;
         }
         /* CSS-Flexbox-Styling für den Distributionscontainer */
         #schemaInfo {
@@ -70,16 +87,25 @@
                 <p id="filePath"></p>
 
                 <div class="tab">
-                    <label for="numRecords">Anzahl der Datensätze</label>
-                    <input type="number" id="numRecords" name="numRecords" min="1">
+                    <label for="dataOption">Datensatz-Option</label>
+                    <select id="dataOption" onchange="updateDataOption()">
+                        <option value="numRecords">Anzahl der Datensätze</option>
+                        <option value="fileSize">Größe in MB</option>
+                    </select>
+
+                    <!-- Verschobenes Wert-Fenster -->
+                    <label for="dataValue"></label>
+                    <input type="number" id="dataValue" name="dataValue" min="1">
                 </div>
-                <div class="tab">
-                    <label for="fileSize">Größe in MB</label>
-                    <input type="number" id="fileSize" name="fileSize" min="1">
-                </div>
+
                 <div class="tab">
                     <label for="freq">Anzahl/Frequenz</label>
-                    <select id="freq"></select>
+                    <select id="freq">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Max">Max</option>
+                    </select>
                 </div>
             </form>
         </div>
@@ -89,24 +115,27 @@
             <!-- Hier werden die Namen aus dem JSON-Schema und das Dropdown-Menü "Normal" angezeigt -->
             <div id="schemaInfo"></div>
         </div>
-
-        <div id="action-buttons">
-            <button id="generateFileBtn">Generiere Datei</button>
-            <button type="button" id="generateExampleBtn" onclick="location.reload();">Generiere Beispiel</button>
-        </div>
     </div>
 
     <div id="right-container">
-        <h2>Beispiel Daten</h2>
-        <ul>
-            <li><strong>Vorname:</strong> {{ data["Vorname"] }}</li>
-            <li><strong>Nachname:</strong> {{ data["Nachname"] }}</li>
-            <li><strong>Nationalität:</strong> {{ data["Nationalität"] }}</li>
-            <li><strong>Telefonnummer:</strong> {{ data["Telefonnummer"] }}</li>
-            <li><strong>E-Mail:</strong> {{ data["E-Mail"] }}</li>
-            <li><strong>Geschlecht:</strong> {{ data["Geschlecht"] }}</li>
-            <li><strong>Alter:</strong> {{ data["Alter"] }}</li>
-        </ul>
+        <div id="example-container">
+            <h2>Beispiel Daten</h2>
+            <ul>
+                <li><strong>Vorname:</strong> {{ data["Vorname"] }}</li>
+                <li><strong>Nachname:</strong> {{ data["Nachname"] }}</li>
+                <li><strong>Nationalität:</strong> {{ data["Nationalität"] }}</li>
+                <li><strong>Telefonnummer:</strong> {{ data["Telefonnummer"] }}</li>
+                <li><strong>E-Mail:</strong> {{ data["E-Mail"] }}</li>
+                <li><strong>Geschlecht:</strong> {{ data["Geschlecht"] }}</li>
+                <li><strong>Alter:</strong> {{ data["Alter"] }}</li>
+            </ul>
+            <button id="generateExampleBtn" onclick="generateExample()">Generiere Beispiel</button>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <div id="action-buttons">
+        <button id="generateFileBtn">Generiere Datei</button>
     </div>
 
     <script>
@@ -144,11 +173,54 @@
             }
         }
 
-        document.getElementById('generateFileBtn').addEventListener('click', function() {
-            // Logik für das Generieren der Datei hier
-        });
+        function updateDataOption() {
+            const dataOption = document.getElementById('dataOption').value;
+            const dataValueInput = document.getElementById('dataValue');
 
-        // Logik für das Generieren des Beispieldatensatzes kann hier implementiert werden, falls erforderlich.
+            // Setze das "min"-Attribut für das entsprechende Eingabefeld basierend auf der ausgewählten Option
+            if (dataOption === 'numRecords') {
+                dataValueInput.min = "1";
+                dataValueInput.placeholder = "Anzahl der Datensätze";
+            } else {
+                dataValueInput.min = "1";
+                dataValueInput.placeholder = "Größe in MB";
+            }
+        }
+
+        function generateExample() {
+            // Logik für das Generieren des Beispieldatensatzes hier
+
+            // Hier wird die Seite neu geladen
+            location.reload();
+        }
+
+        document.getElementById('generateFileBtn').addEventListener('click', function () {
+    const formData = new FormData();
+    formData.append('file', document.getElementById('jsonFile').files[0]);
+
+    fetch('/upload_json', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`No File Selected! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Zeige die Rückmeldung im 'feedback'-Element an
+            document.getElementById('feedback').innerHTML = `<p>${data.message}</p>`;
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            // Zeige die Fehlermeldung im 'feedback'-Element an
+            document.getElementById('feedback').innerHTML = `<p>Error: ${error.message}</p>`;
+            console.error('Error:', error);
+        });
+});
+
+        updateDataOption();
     </script>
 </body>
 </html>
