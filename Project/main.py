@@ -69,9 +69,6 @@ def upload_json():
         # Temporäre Rückmeldungen/////////// MUSS NOCH DURCH RICHTIGE ERSETZT WERDEN SOBALD DATEIN GENERIERT WERDEN
         return jsonify({"message": "File successfully uploaded and processed."}), 200
 
-    else:
-        return jsonify({"error": "Invalid file format. Please upload a .json file."}), 400
-
 
 if __name__ == "__main__":
     app.run(debug=False)
