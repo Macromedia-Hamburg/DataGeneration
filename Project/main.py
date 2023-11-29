@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+import json
 
 from flask import Flask, render_template, request, jsonify
 from mimesis import Person
@@ -37,7 +38,7 @@ def testgen():
     return render_template("testgen.html", data=data)
 
 
-@app.route("/upload_json", methods=["POST"])
+@app.route("/upload_json", methods=["PUT"])
 def upload_json():
     jsondata = "temp.json"
 
@@ -62,9 +63,43 @@ def upload_json():
         # Leert das Temporäre Verzeichnis
         shutil.rmtree(temp_dir)
 
+        #Liest den inhalt der upload.json
+        with open("upload.json", "r") as json_file:
+            json_data = json.load(json_file)
+            mimesis_schema = convert_json_schema_to_mimesis_schema(json_data)
+
+        #Speichert den inhalt der upload.json als mimesis schema
+        with open("mimesis.json", "w") as mimesis_file:
+            json.dump(mimesis_schema, mimesis_file, indent=1)
+
         # Temporäre Rückmeldungen/////////// MUSS NOCH DURCH RICHTIGE ERSETZT WERDEN SOBALD DATEIN GENERIERT WERDEN
         return jsonify({"message": "File successfully uploaded and processed."}), 200
 
+#Nested Function zur umwandlung eines Json Schemas in ein Mimesis Schema
+def convert_json_schema_to_mimesis_schema(json_schema):
+    def process_properties(properties):
+        result = {}
+        for key, value in properties.items():
+            if value["type"] == "object":
+                result[key] = process_properties(value.get("properties", {}))
+            elif value["type"] == "array":
+                result[key] = [process_properties(value["items"])]
+            elif value["type"] == "string":
+                result[key] = "text"
+                if "format" in value:
+                    result[key] = value["format"]
+            elif value["type"] == "integer":
+                result[key] = "age"
+            elif value["type"] == "boolean":
+                result[key] = "boolean"
+            if "enum" in value:
+                result[key] = {"choice": value["enum"]}
+            if "minItems" in value and "maxItems" in value:
+                result[key] = [process_properties(value["items"])] * value["maxItems"]
+
+        return result
+
+    return process_properties(json_schema.get("properties", {}))
 
 if __name__ == "__main__":
     app.run(debug=False)
