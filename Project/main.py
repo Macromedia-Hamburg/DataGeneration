@@ -3,7 +3,7 @@ import shutil
 import tempfile
 import json
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from mimesis import Person
 from mimesis.locales import Locale
 
@@ -11,39 +11,69 @@ app = Flask("name")
 app.secret_key = "banan"
 
 
-@app.route("/", methods=["GET"])
-def testgen():
-    # Gibt die Region der Person an
-    person = Person(Locale.EN)
-
-    # Generiert die Beispieldaten
-    first_name = person.first_name()
-    last_name = person.last_name()
-    address_data = person.nationality()
-    telephone = person.phone_number()
-    email = person.email(unique=True)
-    gender = person.gender()
-    age = person.age(minimum=18, maximum=80)
-
-    data = {
-        "Vorname": first_name,
-        "Nachname": last_name,
-        "Nationalität": address_data,
-        "Telefonnummer": telephone,
-        "E-Mail": email,
-        "Geschlecht": gender,
-        "Alter": age
-    }
-
-    return render_template("testgen.html", data=data)
+@app.route("/", methods=["POST", "GET"])
+def jsonuploadscreen():
+    if request.method == "POST":
+        upload_json()
+        return redirect("/Datensatz")
+    return render_template("Jsonupload.html")
 
 
-@app.route("/upload_json", methods=["PUT"])
+@app.route("/Datensatz", methods=["POST", "GET"])
+def datensatzscreen():
+    if request.method == "POST":
+        # Hier Code implimentieren
+        return redirect("/Distribution")
+
+    return render_template("Datensatz.html")
+
+
+@app.route("/Frequenz", methods=["POST", "GET"])
+def Frequenzscreen():
+    if request.method == "POST":
+        # Hier Code implimentieren
+        return redirect("/Distribution")
+
+    return render_template("Frequenz.html")
+
+
+@app.route("/Distribution", methods=["POST", "GET"])
+def Distributionsscreen():
+
+    dic = "mimesis.json"
+
+    if request.method == "POST":
+        return redirect("/exampledownload")
+
+    # Logik der Distribution fehlt noch. Je nach Auswahl auf der Seite muss das generieren beeinflusst werden
+    with open(dic, "r") as json_file:
+        mimesis_schema = json.load(json_file)
+
+    simplified_keys = simplify_mimesis_schema(mimesis_schema)
+
+    return render_template("Distribution.html", dic=simplified_keys)
+
+
+@app.route("/exampledownload", methods=["POST", "GET"])
+def Downloadscreen():
+
+    if True:
+        #hier Code implimentieren
+        return redirect("/endscreen")
+
+    return render_template("exampledownload.html")
+
+
+@app.route("/endscreen", methods=["GET"])
+def endscreen():
+    return render_template("endscreen.html")
+
+
 def upload_json():
     jsondata = "temp.json"
 
     # Kontaktstelle zum HTML Code. Erstellt eine Variable file und weißt dieser die Hochgeladene Datei zu
-    file = request.files["file"]
+    file = request.files["fileInput"]
 
     # Wird ausgeführt wenn eine JSON Datei ausgewählt wurde. Erstellt einen temporären Dateipfad für die temp.json Datei
     if file and file.filename.endswith(".json"):
@@ -63,19 +93,20 @@ def upload_json():
         # Leert das Temporäre Verzeichnis
         shutil.rmtree(temp_dir)
 
-        #Liest den inhalt der upload.json
+        # Liest den inhalt der upload.json
         with open("upload.json", "r") as json_file:
             json_data = json.load(json_file)
             mimesis_schema = convert_json_schema_to_mimesis_schema(json_data)
 
-        #Speichert den inhalt der upload.json als mimesis schema
+        # Speichert den inhalt der upload.json als mimesis schema
         with open("mimesis.json", "w") as mimesis_file:
             json.dump(mimesis_schema, mimesis_file, indent=1)
 
         # Temporäre Rückmeldungen/////////// MUSS NOCH DURCH RICHTIGE ERSETZT WERDEN SOBALD DATEIN GENERIERT WERDEN
         return jsonify({"message": "File successfully uploaded and processed."}), 200
 
-#Nested Function zur umwandlung eines Json Schemas in ein Mimesis Schema
+
+# Nested Function zur umwandlung eines Json Schemas in ein Mimesis Schema
 def convert_json_schema_to_mimesis_schema(json_schema):
     def process_properties(properties):
         result = {}
@@ -100,6 +131,28 @@ def convert_json_schema_to_mimesis_schema(json_schema):
         return result
 
     return process_properties(json_schema.get("properties", {}))
+
+
+def simplify_mimesis_schema(schema, parent_key=None):
+    simple_keys = []
+
+    for key, value in schema.items():
+        current_key = key if parent_key is None else f"{parent_key}.{key}"
+
+        if isinstance(value, dict):
+            # Ruft die Funktion rekursiv auf, wenn es sich um ein Dic handelt
+            simple_keys.extend(simplify_mimesis_schema(value, current_key))
+        elif isinstance(value, list):
+            # Ruft die funktion für jedes Dic rekursiv auf, wenn es sich in einer Liste befindet
+            for item in value:
+                if isinstance(item, dict):
+                    simple_keys.extend(simplify_mimesis_schema(item, current_key))
+        elif isinstance(value, str):
+            # Fügt den aktuellen Key wert der Liste hinzu, wenn es sich um eine variable handelt
+            simple_keys.append(current_key)
+
+    return simple_keys
+
 
 if __name__ == "__main__":
     app.run(debug=False)

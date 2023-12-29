@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .category-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Distribution</h1>
+
+    <div class="category-container">
+        {% for key in dic %}
+            <div class="category">
+                <h2>{{ key }}</h2>
+                <select name="{{ key }}_distribution">
+                    <option value="normal">Normal</option>
+                    <option value="gauss">Gauss</option>
+                    <option value="test">Test</option>
+                </select>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" action="/exampledownload">
+        <button type="submit" name="next"> Next </button>
+    </form>
+</body>
+</html>

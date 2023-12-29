@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Schema</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON Schema</h1>
+    <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="fileInput" accept=".json">
+        <label for="fileInput">Datei hochladen</label>
+    </form>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                // Hier kannst du den Code zum Verarbeiten der hochgeladenen Datei einfügen
+                console.log('Datei hochgeladen:', file.name);
+
+                // Automatisch das Formular nach dem Hochladen der Datei absenden
+                document.getElementById('uploadForm').submit();
+            } else {
+                console.log('Keine Datei ausgewählt');
+            }
+        }
+    </script>
+</body>
+</html>
