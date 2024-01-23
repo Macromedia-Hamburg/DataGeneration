@@ -61,20 +61,23 @@
     <h1>Distribution</h1>
 
     <div class="category-container">
-        {% for key in dic %}
-            <div class="category">
-                <h2>{{ key }}</h2>
-                <select name="{{ key }}_distribution">
-                    <option value="normal">Normal</option>
-                    <option value="gauss">Gauss</option>
-                    <option value="test">Test</option>
-                </select>
-            </div>
-        {% endfor %}
+        <form method="POST">
+            {% for key in dic %}
+                <div class="category">
+                    <h2>{{ key }}</h2>
+                    <select name="{{ key }}_distribution">
+                        <option value="Normal">Normal</option>
+                        <option value="Niedrig">Niedrig</option>
+                        <option value="Mittig">Mittig</option>
+                        <option value="Hoch">Hoch</option>
+                        <option value="Niedrig-Mittig">Niedrig-Mittig</option>
+                        <option value="Mittig-Hoch">Mittig-Hoch</option>
+                        <option value="Niedrig-Hoch">Niedrig-Hoch</option>
+                    </select>
+                </div>
+            {% endfor %}
+            <button type="submit" name="next"> Next </button>
+        </form>
     </div>
-
-    <form method="POST" action="/exampledownload">
-        <button type="submit" name="next"> Next </button>
-    </form>
 </body>
 </html>

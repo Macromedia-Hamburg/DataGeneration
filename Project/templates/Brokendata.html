@@ -65,19 +65,33 @@
             background-color: #0056b3;
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.querySelector('form');
+            form.addEventListener('submit', function (event) {
+                var brokendataPercentage = parseInt(document.getElementById('brokendataPercentage').value, 10);
+                var emptydataPercentage = parseInt(document.getElementById('emptydataPercentage').value, 10);
+                var totalPercentage = brokendataPercentage + emptydataPercentage;
+
+                if (totalPercentage > 100) {
+                    event.preventDefault(); // Verhindert das Absenden des Formulars
+                    alert('Die Summe der Prozentsätze darf nicht mehr als 100 betragen.');
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 
-     <form method="POST" action="/Frequenz">
-        <!-- Hier kannst du den gewünschten Endpunkt einsetzen, z.B., "/datensatzscreen" -->
+    <form method="POST" action="/brokendata">
+        <h1>Broken/Empty Data</h1>
 
-        <h1>Frequenz</h1>
+        <label for="brokendataPercentage">Broken Data in %:</label>
+        <input type="text" id="brokendataPercentage" name="brokendataPercentage" placeholder="Broken Data in %">
 
-        <label for="minutes">Minutes:</label>
-        <input type="text" id="minutes" name="minutes" placeholder="Minutes">
-
-        <label for="seconds">Seconds:</label>
-        <input type="text" id="seconds" name="seconds" placeholder="Seconds">
+        <label for="emptydataPercentage">Empty Data in %:</label>
+        <input type="text" id="emptydataPercentage" name="emptydataPercentage" placeholder="Empty Data in %">
 
         <button type="submit">Absenden</button>
     </form>

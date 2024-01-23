@@ -1,1 +1,90 @@
-#Leer bis code vorliegt
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Download</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #datapack-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Neues Styling für bessere Strukturierung */
+        .data-block {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .key-value {
+            margin-left: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Example Download</h1>
+
+    <div id="datapack-container">
+        <h2>Datapack Content (F5 to generate new example):</h2>
+        {% for data in datapack %}
+            <div class="data-block">
+                <ul class="key-value">
+                    <li>{{ "{ " }}</li>
+                    {% for key, value in data.items() %}
+                        <li>{{ key }}: {{ value }}{% if not loop.last %},{% endif %}</li>
+                    {% endfor %}
+                    <li>{{ "}" }}</li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Formular für POST-Anfrage -->
+    <form method="POST" action="/exampledownload">
+        <button type="submit">Daten herunterladen</button>
+    </form>
+
+    <!-- Weitere HTML-Elemente oder Styling hier einfügen, falls erforderlich -->
+
+</body>
+</html>
