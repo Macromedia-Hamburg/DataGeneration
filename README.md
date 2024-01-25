@@ -7,25 +7,25 @@ This project is a group work by students at the Macromedia University of Applied
 ## How to Use
 The programm redirects you trough 7 different sides. 
 1. JsonUpload
-   you upload your pre made JSON Scheme.
+you upload your pre made JSON Scheme.
 2. Datensatz
-   You input the amount of data you want to generate and the filesize each generated file should have.
+You input the amount of data you want to generate and the filesize each generated file should have.
 3. brokendata
-   you input the amount of broken data and the amount of empty data in % that you want in the end product.
-   if you dont want any broken data, input a 0 for both
+you input the amount of broken data and the amount of empty data in % that you want in the end product.
+if you dont want any broken data, input a 0 for both
 4. Frequenz
-   Input the Minutes and Seconds by which you want to delay the upload
-   e.g. Minutes = 5, Seconds = 0, after each upload to your AWS S3 Cloud the programm is gonna wait 5 Minutes before uploading the next file
+Input the Minutes and Seconds by which you want to delay the upload
+e.g. Minutes = 5, Seconds = 0, after each upload to your AWS S3 Cloud the programm is gonna wait 5 Minutes before uploading the next file
 5. Distribution
-   Heres every datatype shown which had the value "int" within your JSON Scheme.
-   Select one of the following choices: Normal, Low, Mid, High, Low-Mid, Mid-High, Low-High.
-   Whenever the program generates an integer there will a 6 digits long number, dependend on what you have chosen before.
+Heres every datatype shown which had the value "int" within your JSON Scheme.
+Select one of the following choices: Normal, Low, Mid, High, Low-Mid, Mid-High, Low-High.
+Whenever the program generates an integer there will a 6 digits long number, dependend on what you have chosen before.
 6. exampledownload
-   Shows you an example datapack, using the variables which you have chosen before.
-   if you are okay with the output press the Upload button which will start the downloading, and uploading process.
-   IMPORTANT: if you wish to delete the generated data after uploading you will find generated_data_* in your programm folder.
+Shows you an example datapack, using the variables which you have chosen before.
+if you are okay with the output press the Upload button which will start the downloading, and uploading process.
+IMPORTANT: if you wish to delete the generated data after uploading you will find generated_data_* in your programm folder.
 7. endscreen
-   Nothing else to input, simple feedback that the Process has finished and that there wont be any more uploads.
+Nothing else to input, simple feedback that the Process has finished and that there wont be any more uploads.
 
 
 # Dockerfile
