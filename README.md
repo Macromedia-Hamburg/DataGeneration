@@ -1,7 +1,7 @@
 
 # DataGenerationApp
 
-This project is a group work by students at Macromedia Hamburg. it is a Data Generation Application that allows users to generate and configure various types of data. The application is developed in Python 3 and is available as a Flask web application in the browser.
+This project is a group work by students at the Macromedia University of Applied Sciences. It's a Data Generation Application that allows users to generate and configure various types of data. The application is developed in Python 3 and is available as a Flask web application in the browser.
 
 
 
