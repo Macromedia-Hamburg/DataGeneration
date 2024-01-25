@@ -20,7 +20,7 @@ This project is a group work by students at Macromedia Hamburg. it is a Data Gen
 
 Pull `lisasmn/datagenapp` from the Docker repository:
 
-docker pull lisasmn/datagenapp
+    docker pull lisasmn/datagenapp
 
 ### Run
 
