@@ -7,16 +7,17 @@ import tempfile
 import json
 import glob
 import time
-import sys
+import boto3
+
+from botocore.exceptions import NoCredentialsError
 from flask import Flask, render_template, request, jsonify, redirect, session
 from mimesis import Person, Generic, Datetime
-from mimesis.enums import Gender
-from mimesis.locales import Locale
+
 
 app = Flask("name")
-app.secret_key = "banan"
+app.secret_key = "FN713fJ35oaC9u1k"
 
-
+# Lets you upload your JSON Scheme
 @app.route("/", methods=["POST", "GET"])
 def jsonuploadscreen():
     if request.method == "POST":
@@ -24,7 +25,7 @@ def jsonuploadscreen():
         return redirect("/Datensatz")
     return render_template("Jsonupload.html")
 
-
+# Asks for information about the amount and the size of the generated data
 @app.route("/Datensatz", methods=["POST", "GET"])
 def datensatzscreen():
     if request.method == "POST":
@@ -41,6 +42,7 @@ def datensatzscreen():
 
     return render_template("Datensatz.html")
 
+# Asks for information about broken and empty data
 @app.route("/brokendata", methods=["POST", "GET"])
 def brokendata():
 
@@ -59,6 +61,7 @@ def brokendata():
 
     return render_template("brokendata.html")
 
+# Asks for information about the Frequency
 @app.route("/Frequenz", methods=["POST", "GET"])
 def Frequenzscreen():
     if request.method == "POST":
@@ -76,7 +79,7 @@ def Frequenzscreen():
 
     return render_template("Frequenz.html")
 
-
+# Asks for information about the distribution
 @app.route("/Distribution", methods=["POST", "GET"])
 def Distributionsscreen():
 
@@ -107,6 +110,8 @@ def Distributionsscreen():
     return render_template("Distribution.html", dic=simplified_keys)
 
 
+# Upload was NOT tested, due to missing information. might has to be changed.
+# Generates and example data using the given information and provised a download button, that starts the upload
 @app.route("/exampledownload", methods=["POST", "GET"])
 def exampledownload():
 
@@ -118,14 +123,15 @@ def exampledownload():
         minutes = session.get("minutes")
         seconds = session.get("seconds")
 
-        # Download button startet den Download
         final_generate(anzahl, groesse)
 
-        # Startet den upload
-        # AWS S3 Upload über for loop
+        # starts the upload
+        # bucket and s3_file still has to be added. else there will not be an upload to AWS S3
+        for file_count in glob.glob("generated_data_*.json", start=1):
 
-        # Frequenz nach jedem upload (innerhalb des for loops)
-        # frequenz(minutes, seconds)
+            upload_to_aws(f"generated_data_{file_count}.json", , )
+            print(f"generated_data{file_count}.json wurde erfolgreich hochgeladen")
+            frequenz(minutes, seconds)
 
         return redirect("/endscreen")
 
@@ -133,51 +139,39 @@ def exampledownload():
     with open("mimesis.json", 'r') as file:
         schema = json.load(file)
     datapack = [generate_data(schema)]
-    # Generate 1 Datapack to showcase
+
     return render_template("exampledownload.html", datapack=datapack)
 
-
+# End Message when the upload was succesfull
 @app.route("/endscreen", methods=["GET"])
 def endscreen():
     return render_template("endscreen.html")
 
-
+# Safes the uploaded JSON File
 def upload_json():
     jsondata = "temp.json"
-
-    # Kontaktstelle zum HTML Code. Erstellt eine Variable file und weißt dieser die Hochgeladene Datei zu
     file = request.files["fileInput"]
 
-    # Wird ausgeführt wenn eine JSON Datei ausgewählt wurde. Erstellt einen temporären Dateipfad für die temp.json Datei
     if file and file.filename.endswith(".json"):
         temp_dir = tempfile.mkdtemp()
         temp_file_path = os.path.join(temp_dir, "temp.json")
 
-        # Speichert die hochgeladene Datei im temporären Verzeichnis
         file.save(temp_file_path)
 
-        # Überprüft ob temp.json erstellt wurde und falls ja, wird diese gelöscht
         if os.path.exists(jsondata):
             os.remove(jsondata)
 
-        # Kopiert den Inhalt der Temp Datei in die uploaddata.json im Dateiordner
         shutil.copy(temp_file_path, "upload.json")
-
-        # Leert das Temporäre Verzeichnis
         shutil.rmtree(temp_dir)
 
-        # Liest den inhalt der upload.json
         with open("upload.json", "r") as json_file:
             json_data = json.load(json_file)
             mimesis_schema = convert_json_schema_to_mimesis_schema(json_data)
 
-        # Speichert den inhalt der upload.json als mimesis schema
         with open("mimesis.json", "w") as mimesis_file:
             json.dump(mimesis_schema, mimesis_file, indent=1)
 
-        # Temporäre Rückmeldungen/////////// MUSS NOCH DURCH RICHTIGE ERSETZT WERDEN SOBALD DATEIN GENERIERT WERDEN
         return jsonify({"message": "File successfully uploaded and processed."}), 200
-
 
 # Nested Function zur umwandlung eines Json Schemas in ein Mimesis Schema
 def convert_json_schema_to_mimesis_schema(json_schema):
@@ -212,8 +206,7 @@ def convert_json_schema_to_mimesis_schema(json_schema):
 
     return process_properties(json_schema.get("properties", {}))
 
-
-#Nur Zahlen in die Distribution mit übernehmen
+# Simplifies the mimesis scheme, in order to make it available for the frontend
 def simplify_mimesis_schema(schema, parent_key=None):
     simple_keys = []
 
@@ -221,15 +214,15 @@ def simplify_mimesis_schema(schema, parent_key=None):
         current_key = key if parent_key is None else f"{parent_key}.{key}"
 
         if isinstance(value, dict):
-            # Ruft die Funktion rekursiv auf, wenn es sich um ein Dic handelt
+            # Calls the function recursivly , whenever it is a dic
             simple_keys.extend(simplify_mimesis_schema(value, current_key))
         elif isinstance(value, list):
-            # Ruft die funktion für jedes Dic rekursiv auf, wenn es sich in einer Liste befindet
+            # Calls the function recursivly for each dictionary, whenever it is inside a list
             for item in value:
                 if isinstance(item, dict):
                     simple_keys.extend(simplify_mimesis_schema(item, current_key))
         elif isinstance(value, str) and value == "int":
-            # Fügt den aktuellen Key wert der Liste hinzu, wenn es sich um einen int handelt
+            # adds the current key value to the list, whenever it is an Integer
             simple_keys.append(current_key)
 
     return simple_keys
@@ -238,6 +231,7 @@ def simplify_mimesis_schema(schema, parent_key=None):
 def generate_data(schema, generic=Generic('de')):
     distribution_data = session.get("distribution_data")
 
+    # handles integers
     def process_int(key, distribution_data):
 
         value = distribution_data.get(key, "Normal")
@@ -261,6 +255,7 @@ def generate_data(schema, generic=Generic('de')):
                 gen_int = generic.random.randint(100000, 999999)
             return gen_int
 
+    # handles every other data type
     def process_schema(key, value):
         fehlerliste = [123, "Nicht Gefunden", [" "], {" ": " "}]
 
@@ -311,10 +306,12 @@ def generate_data(schema, generic=Generic('de')):
     else:
         return f"Ungültiger Schematyp: {schema}"
 
+# clear past data
 def clear_previous_files():
     for file in glob.glob("generated_data_*.json"):
         os.remove(file)
 
+# generates a large file to split up later
 def generate_large_data_file(anzahl_datensaetze):
     large_data = []
 
@@ -329,6 +326,7 @@ def generate_large_data_file(anzahl_datensaetze):
 
     return large_data
 
+# splits the large file into smaller ones
 def split_data_into_smaller_files(large_data, zielgroesse_mb):
     file_index = 1
     buffer = ""
@@ -357,16 +355,37 @@ def split_data_into_smaller_files(large_data, zielgroesse_mb):
 
     return file_index
 
+# sums up the data and file generation
 def final_generate(data_amount, data_size):
     clear_previous_files()
     large_data = generate_large_data_file(data_amount)
     split_data_into_smaller_files(large_data, data_size)
     os.remove("generated_data_large.json")
 
+# makes use of the frequency in order to delay uploads
 def frequenz(minutes, seconds):
     time_frequency = minutes * 60 + seconds
     round(time_frequency)
     time.sleep(time_frequency)
+
+# uploads the data to AWS S3
+def upload_to_aws(local_file, bucket, s3_file):
+    # access_key and secret_key still has to be added. else there will not be an upload to AWS S3
+    access_key = 'YOUR_ACCESS_KEY'
+    secret_key = 'YOUR_SECRET_KEY'
+
+    s3 = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
+
+    try:
+        s3.upload_file(local_file, bucket, s3_file)
+        print(f"Upload Successful: {s3_file}")
+        return True
+    except FileNotFoundError:
+        print("The file was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
 
 if __name__ == "__main__":
     app.run(debug=True)
